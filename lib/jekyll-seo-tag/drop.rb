@@ -50,28 +50,56 @@ module Jekyll
         @page_title ||= format_string(page["title"]) || site_title
       end
 
+      def page_pagination_title
+        @page_pagination_title ||= begin
+          format_string(page["pagination"]["title"]) if page["pagination"]
+        end
+      end
+
+      def page_subtitle_title
+        @page_subtitle_title ||= begin
+          if page["title"] && page["subtitle"]
+            format_string(page["title"] + " — " + page["subtitle"])
+          end
+        end
+      end
+
       def site_tagline_or_description
         site_tagline || site_description
       end
 
-      # Page title with site title or description appended
       # rubocop:disable Metrics/CyclomaticComplexity
+      # Page title with site title or description appended
       def title
         @title ||= begin
-          if site_title && page_title != site_title
-            page_title + TITLE_SEPARATOR + site_title
-          elsif site_description && site_title
-            site_title + TITLE_SEPARATOR + site_tagline_or_description
+          if site_title && (page_title == "Home" || page["title"].nil?)
+            site_title
+          elsif site_title
+            determine_title || site_title
           else
-            page_title || site_title
+            page_title
           end
         end
 
-        return page_number + @title if page_number
+        return @title + page_number if page_number
 
         @title
       end
       # rubocop:enable Metrics/CyclomaticComplexity
+
+      # rubocop:disable Metrics/AbcSize
+      def determine_title
+        if page_pagination_title
+          site_title + TITLE_SEPARATOR + page_pagination_title
+        elsif page_subtitle_title
+          site_title + TITLE_SEPARATOR + page_subtitle_title
+        elsif page_title != site_title
+          site_title + TITLE_SEPARATOR + page_title
+        elsif site_description
+          site_title + TITLE_SEPARATOR + site_tagline_or_description
+        end
+      end
+      # rubocop:enable Metrics/AbcSize
 
       def name
         return @name if defined?(@name)
@@ -198,7 +226,7 @@ module Jekyll
 
         current = @context["paginator"]["page"]
         total = @context["paginator"]["total_pages"]
-        paginator_message = site["seo_paginator_message"] || "Page %<current>s of %<total>s for "
+        paginator_message = site["seo_paginator_message"] || " (page %<current>s of %<total>s)"
 
         format(paginator_message, :current => current, :total => total) if current > 1
       end
