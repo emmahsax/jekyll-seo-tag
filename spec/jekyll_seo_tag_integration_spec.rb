@@ -52,7 +52,7 @@ RSpec.describe Jekyll::SeoTag do
       let(:site) { make_site("name" => "Site Name") }
 
       it "builds the title with a page title and site name" do
-        expect(output).to match(%r!<title>foo \| Site Name</title>!)
+        expect(output).to match(%r!<title>Site Name \| foo</title>!)
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe Jekyll::SeoTag do
       let(:site) { make_site("title" => "bar") }
 
       it "builds the title with a page title and site title" do
-        expect(output).to match(%r!<title>foo \| bar</title>!)
+        expect(output).to match(%r!<title>bar \| foo</title>!)
       end
     end
 
@@ -76,19 +76,15 @@ RSpec.describe Jekyll::SeoTag do
       let(:site) { make_site("title" => "Site Title", "description" => "Site Description") }
 
       it "builds the title with a page title and site title" do
-        expect(output).to match(%r!<title>foo \| Site Title</title>!)
+        expect(output).to match(%r!<title>Site Title \| foo</title>!)
       end
 
       it "does not build the title with the site description" do
         expect(output).not_to match(%r!<title>foo \| Site Description</title>!)
       end
-    end
-
-    context "with site.title and site.description" do
-      let(:site) { make_site("title" => "Site Title", "description" => "Site Description") }
 
       it "builds the title with a page title and site title" do
-        expect(output).to match(%r!<title>foo \| Site Title</title>!)
+        expect(output).to match(%r!<title>Site Title \| foo</title>!)
       end
 
       it "does not build the title with the site description" do
@@ -105,11 +101,46 @@ RSpec.describe Jekyll::SeoTag do
     end
   end
 
+  context "with site.title and page.pagination.title" do
+    let(:site) { make_site("title" => "Site title") }
+    let(:page_meta) do
+      { "title" => "site title", "pagination" => { "title" => "pagination title" } }
+    end
+    let(:page) { make_page(page_meta) }
+
+    it "should build the title" do
+      expect(output).to match(%r!<title>Site title | pagination title</title>!)
+    end
+  end
+
+  context "with site.title, page.title, and page.subtitle" do
+    let(:site)      { make_site("title" => "Site title") }
+    let(:title)     { "Test Title" }
+    let(:subtitle)  { "Subtitle" }
+    let(:page_meta) { { "title" => title, "subtitle" => subtitle } }
+    let(:page)      { make_page(page_meta) }
+
+    it "should build the title" do
+      expect(output).to match(%r!<title>Site title | title — subtitle</title>!)
+    end
+  end
+
+  context "with site.title and page.title == Home" do
+    let(:site)      { make_site("title" => "Site title") }
+    let(:title)     { "Home" }
+    let(:page_meta) { { "title" => title } }
+    let(:page)      { make_page(page_meta) }
+
+    it "should build the title" do
+      expect(output).to match(%r!<title>Site title</title>!)
+    end
+  end
+
   context "with site.title and site.description" do
     let(:site) { make_site("title" => "Site Title", "description" => "Site Description") }
 
     it "builds the title with site title and description" do
-      expect(output).to match(%r!<title>Site Title \| Site Description</title>!)
+      expect(output).to match(%r!<title>Site Title</title>!)
     end
   end
 

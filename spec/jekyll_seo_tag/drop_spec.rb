@@ -66,10 +66,74 @@ RSpec.describe Jekyll::SeoTag::Drop do
       end
     end
 
+    context "page_pagination_title" do
+      context "without a pagination section" do
+        let(:page_meta) { { "pagination" => nil } }
+        let(:page)      { make_page(page_meta) }
+
+        it "will return nil" do
+          expect(subject.page_pagination_title).to eql(nil)
+        end
+      end
+
+      context "with pagination section but without pagination title section" do
+        let(:page_meta) { { "pagination" => { "title" => nil } } }
+        let(:page)      { make_page(page_meta) }
+
+        it "will return nil" do
+          expect(subject.page_pagination_title).to eql(nil)
+        end
+      end
+
+      context "with pagination title" do
+        let(:title)     { "Test Title" }
+        let(:page_meta) { { "pagination" => { "title" => title } } }
+        let(:page)      { make_page(page_meta) }
+
+        it "will return the paginated title" do
+          expect(subject.page_pagination_title).to eql(title)
+        end
+      end
+    end
+
+    context "page_subtitle_title" do
+      context "with a title and a subtitle" do
+        let(:title)           { "Test Title" }
+        let(:subtitle)        { "Subtitle" }
+        let(:page_meta)       { { "title" => title, "subtitle" => subtitle } }
+        let(:page)            { make_page(page_meta) }
+        let(:title_separator) { " — " }
+
+        it "will return the two connected by an title_separator" do
+          expect(subject.page_subtitle_title).to eql(title + title_separator + subtitle)
+        end
+      end
+
+      context "with only a title" do
+        let(:title)     { "Test Title" }
+        let(:page_meta) { { "title" => title, "subtitle" => nil } }
+        let(:page)      { make_page(page_meta) }
+
+        it "will return nil" do
+          expect(subject.page_subtitle_title).to eql(nil)
+        end
+      end
+
+      context "with only a subtitle" do
+        let(:subtitle)  { "Subtitle" }
+        let(:page_meta) { { "title" => nil, "subtitle" => subtitle } }
+        let(:page)      { make_page(page_meta) }
+
+        it "will return nil" do
+          expect(subject.page_subtitle_title).to eql(nil)
+        end
+      end
+    end
+
     context "title" do
       context "with a page and site title" do
         it "builds the title" do
-          expect(subject.title).to eql("page title | site title")
+          expect(subject.title).to eql("site title | page title")
         end
       end
 
@@ -80,7 +144,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         end
 
         it "builds the title" do
-          expect(subject.title).to eql("site title | site description")
+          expect(subject.title).to eql("site title")
         end
       end
 
@@ -91,7 +155,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         end
 
         it "builds the title" do
-          expect(subject.title).to eql("site title | site tagline")
+          expect(subject.title).to eql("site title")
         end
       end
 
@@ -142,6 +206,77 @@ RSpec.describe Jekyll::SeoTag::Drop do
 
         it "returns nil" do
           expect(subject.title).to be_nil
+        end
+      end
+
+      context "when the page title is Home" do
+        let(:page_meta) { { "title" => "Home" } }
+        let(:page)      { make_page(page_meta) }
+
+        it "should return only the site title" do
+          expect(subject.title).to eql("site title")
+        end
+      end
+
+      context "when the page title is nil" do
+        let(:page_meta) { { "title" => nil } }
+        let(:page)      { make_page(page_meta) }
+
+        it "should return only the site title" do
+          expect(subject.title).to eql("site title")
+        end
+      end
+    end
+
+    context "determine_title" do
+      context "with a page and site title" do
+        it "builds the title" do
+          expect(subject.determine_title).to eql("site title | page title")
+        end
+      end
+
+      context "with a site description but no page title" do
+        let(:page)  { make_page }
+        let(:config) do
+          { "title" => "site title", "description" => "site description" }
+        end
+
+        it "builds the title" do
+          expect(subject.determine_title).to eql("site title | site description")
+        end
+      end
+
+      context "with a site tagline but no page title" do
+        let(:page)  { make_page }
+        let(:config) do
+          { "title" => "site title", "description" => "site description", "tagline" => "site tagline" }
+        end
+
+        it "builds the title" do
+          expect(subject.determine_title).to eql("site title | site tagline")
+        end
+      end
+
+      context "with a page pagination title" do
+        let(:page_meta) do
+          { "title" => "site title", "pagination" => { "title" => "pagination title" } }
+        end
+        let(:page) { make_page(page_meta) }
+
+        it "builds the title" do
+          expect(subject.determine_title).to eql("site title | pagination title")
+        end
+      end
+
+      context "with a page title and subtitle" do
+        let(:page_meta) do
+          { "title" => "site title", "subtitle" => "subtitle" }
+        end
+        let(:page)            { make_page(page_meta) }
+        let(:title_separator) { "—" }
+
+        it "builds the title" do
+          expect(subject.determine_title).to eql("site title | site title #{title_separator} subtitle")
         end
       end
     end
@@ -502,7 +637,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
     end
 
     it "render default pagination title" do
-      expect(subject.send(:page_number)).to eq("Page 2 of 10 for ")
+      expect(subject.send(:page_number)).to eq(" (page 2 of 10)")
     end
 
     context "render custom pagination title" do
@@ -510,6 +645,12 @@ RSpec.describe Jekyll::SeoTag::Drop do
 
       it "renders the correct page number" do
         expect(subject.send(:page_number)).to eq("2 of 10")
+      end
+    end
+
+    context "render built-in pagination title" do
+      it "renders the correct page number" do
+        expect(subject.send(:page_number)).to eq(" (page 2 of 10)")
       end
     end
   end
