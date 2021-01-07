@@ -6,21 +6,7 @@ inherit_gem:
 
 AllCops:
   TargetRubyVersion: 2.7
-  Include:
-    - lib/**/*.rb
-
   Exclude:
-    - .gitignore
-    - .rspec
-    - .rubocop.yml
-    - .travis.yml
-
-    - Gemfile.lock
-    - History.markdown
-    - LICENSE.txt
-    - README.md
-
-    - script/**/*
     - vendor/**/*
 
 Layout/LineLength:
