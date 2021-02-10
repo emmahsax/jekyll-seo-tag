@@ -21,7 +21,8 @@ module Jekyll
       private :logo
 
       VALID_ENTITY_TYPES = %w(BlogPosting CreativeWork).freeze
-      private_constant :VALID_ENTITY_TYPES
+      VALID_AUTHOR_TYPES = %w(Organization Person).freeze
+      private_constant :VALID_ENTITY_TYPES, :VALID_AUTHOR_TYPES
 
       # page_drop should be an instance of Jekyll::SeoTag::Drop
       def initialize(page_drop)
@@ -38,8 +39,11 @@ module Jekyll
       def author
         return unless page_drop.author["name"]
 
+        author_type = page_drop.author["type"]
+        return if author_type && !VALID_AUTHOR_TYPES.include?(author_type)
+
         {
-          "@type" => "Person",
+          "@type" => author_type || "Person",
           "name"  => page_drop.author["name"],
         }
       end
@@ -80,7 +84,12 @@ module Jekyll
       private :main_entity
 
       def to_json
-        to_h.reject { |_k, v| v.nil? }.to_json
+        sort_order = [
+          'headline', 'name', 'url', 'mainEntityOfPage', 'dateModified', 'datePublished',
+          'author', 'publisher', 'description', 'sameAs', 'image', '@type', '@context'
+        ]
+        hash = (sort_order & to_h.keys).map { |k| [k, to_h[k]] }.to_h
+        hash.reject { |_k, v| v.nil? }.to_json
       end
 
       private
