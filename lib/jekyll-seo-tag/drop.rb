@@ -128,6 +128,7 @@ module Jekyll
 
       # A drop representing the JSON-LD output
       def json_ld
+        # puts JSONLDDrop.new(self).to_json
         @json_ld ||= JSONLDDrop.new(self)
       end
 

@@ -80,7 +80,12 @@ module Jekyll
       private :main_entity
 
       def to_json
-        to_h.reject { |_k, v| v.nil? }.to_json
+        sort_order = [
+          'headline', 'name', 'url', 'mainEntityOfPage', 'dateModified', 'datePublished',
+          'author', 'publisher', 'description', 'sameAs', 'image', '@type', '@context'
+        ]
+        hash = (sort_order & to_h.keys).map { |k| [k, to_h[k]] }.to_h
+        hash.reject { |_k, v| v.nil? }.to_json
       end
 
       private
