@@ -33,8 +33,8 @@ module Jekyll
         @display_title = (@text !~ %r!title=false!i)
       end
 
-      def emmasax4_site?
-        site_title == "Emma Sax"
+      def site_title_prioritization?
+        site["seo_title_prioritization"] == "site"
       end
 
       def site_title
@@ -74,7 +74,7 @@ module Jekyll
 
       # Page title with site title or description appended
       def title
-        @title ||= emmasax4_site? ? determine_emmasax4_title : determine_generic_title
+        @title ||= site_title_prioritization? ? determine_site_priority_title : determine_generic_title
 
         return @title + page_number if page_number
 
@@ -91,7 +91,7 @@ module Jekyll
         end
       end
 
-      def determine_emmasax4_title
+      def determine_site_priority_title
         if site_title && (page_title == "Home" || page["title"].nil?)
           site_title
         elsif site_title

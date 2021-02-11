@@ -132,14 +132,14 @@ RSpec.describe Jekyll::SeoTag::Drop do
 
     context "title" do
       context "with a page and site title" do
-        context "when emmasax4 site" do
+        context "when site title prioritized" do
           it "builds the title" do
-            allow(subject).to receive(:emmasax4_site?).and_return(true)
+            allow(subject).to receive(:site_title_prioritization?).and_return(true)
             expect(subject.title).to eql("site title | page title")
           end
         end
 
-        context "when generic site" do
+        context "when page title prioritized" do
           it "builds the title" do
             expect(subject.title).to eql("page title | site title")
           end
@@ -147,18 +147,18 @@ RSpec.describe Jekyll::SeoTag::Drop do
       end
 
       context "with a site description but no page title" do
-        context "when emmasax4 site" do
+        context "when site title prioritized" do
           let(:page)  { make_page }
           let(:config) do
-            { "title" => "Emma Sax", "description" => "site description" }
+            { "title" => "Site Title", "description" => "site description", "seo_title_prioritization" => "site" }
           end
 
           it "builds the title" do
-            expect(subject.title).to eql("Emma Sax")
+            expect(subject.title).to eql("Site Title")
           end
         end
 
-        context "when generic site" do
+        context "when page title prioritized" do
           let(:page)  { make_page }
           let(:config) do
             { "title" => "site title", "description" => "site description" }
@@ -171,18 +171,18 @@ RSpec.describe Jekyll::SeoTag::Drop do
       end
 
       context "with a site tagline but no page title" do
-        context "when emmasax4 site" do
+        context "when site title prioritized" do
           let(:page)  { make_page }
           let(:config) do
-            { "title" => "Emma Sax", "description" => "site description", "tagline" => "site tagline" }
+            { "title" => "Site Title", "description" => "site description", "tagline" => "site tagline", "seo_title_prioritization" => "site" }
           end
 
           it "builds the title" do
-            expect(subject.title).to eql("Emma Sax")
+            expect(subject.title).to eql("Site Title")
           end
         end
 
-        context "when generic site" do
+        context "when page title prioritized" do
           let(:page)  { make_page }
           let(:config) do
             { "title" => "site title", "description" => "site description", "tagline" => "site tagline" }
@@ -245,19 +245,19 @@ RSpec.describe Jekyll::SeoTag::Drop do
       end
 
       context "when the page title is Home" do
-        context "when emmasax4 site" do
+        context "when site title prioritized" do
           let(:page_meta) { { "title" => "Home" } }
           let(:page)      { make_page(page_meta) }
           let(:config) do
-            { "title" => "Emma Sax", "description" => "site description", "tagline" => "site tagline" }
+            { "title" => "Site Title", "description" => "site description", "tagline" => "site tagline", "seo_title_prioritization" => "site" }
           end
 
           it "should return only the site title" do
-            expect(subject.title).to eql("Emma Sax")
+            expect(subject.title).to eql("Site Title")
           end
         end
 
-        context "when generic site" do
+        context "when page title prioritized" do
           let(:page_meta) { { "title" => "Home" } }
           let(:page)      { make_page(page_meta) }
 
