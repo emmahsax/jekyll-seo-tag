@@ -49,18 +49,38 @@ RSpec.describe Jekyll::SeoTag do
     end
 
     context "with site.name" do
-      let(:site) { make_site("name" => "Site Name") }
+      context "when site title prioritized" do
+        let(:site) { make_site("name" => "Site Title", "seo_title_prioritization" => "site") }
 
-      it "builds the title with a page title and site name" do
-        expect(output).to match(%r!<title>Site Name \| foo</title>!)
+        it "builds the title with a page title and site name" do
+          expect(output).to match(%r!<title>Site Title \| foo</title>!)
+        end
+      end
+
+      context "when page title prioritized" do
+        let(:site) { make_site("name" => "Site Name") }
+
+        it "builds the title with a page title and site name" do
+          expect(output).to match(%r!<title>foo \| Site Name</title>!)
+        end
       end
     end
 
     context "with site.title" do
-      let(:site) { make_site("title" => "bar") }
+      context "when site title prioritized" do
+        let(:site) { make_site("title" => "Site Title", "seo_title_prioritization" => "site" ) }
 
-      it "builds the title with a page title and site title" do
-        expect(output).to match(%r!<title>bar \| foo</title>!)
+        it "builds the title with a page title and site title" do
+          expect(output).to match(%r!<title>Site Title \| foo</title>!)
+        end
+      end
+
+      context "when page title prioritized" do
+        let(:site) { make_site("title" => "bar") }
+
+        it "builds the title with a page title and site title" do
+          expect(output).to match(%r!<title>foo \| bar</title>!)
+        end
       end
     end
 
@@ -73,18 +93,24 @@ RSpec.describe Jekyll::SeoTag do
     end
 
     context "with site.title and site.description" do
-      let(:site) { make_site("title" => "Site Title", "description" => "Site Description") }
+      context "when site title prioritized" do
+        let(:site) { make_site("title" => "Site Title", "description" => "Site Description", "seo_title_prioritization" => "site") }
 
-      it "builds the title with a page title and site title" do
-        expect(output).to match(%r!<title>Site Title \| foo</title>!)
+        it "builds the title with a page title and site title" do
+          expect(output).to match(%r!<title>Site Title \| foo</title>!)
+        end
+      end
+
+      context "when page title prioritized" do
+        let(:site) { make_site("title" => "foo", "description" => "Site Description") }
+
+        it "builds the title with a page title and site description" do
+          expect(output).to match(%r!<title>foo \| Site Description</title>!)
+        end
       end
 
       it "does not build the title with the site description" do
         expect(output).not_to match(%r!<title>foo \| Site Description</title>!)
-      end
-
-      it "builds the title with a page title and site title" do
-        expect(output).to match(%r!<title>Site Title \| foo</title>!)
       end
 
       it "does not build the title with the site description" do
@@ -102,45 +128,71 @@ RSpec.describe Jekyll::SeoTag do
   end
 
   context "with site.title and page.pagination.title" do
-    let(:site) { make_site("title" => "Site title") }
-    let(:page_meta) do
-      { "title" => "site title", "pagination" => { "title" => "pagination title" } }
-    end
-    let(:page) { make_page(page_meta) }
+    context "when site title prioritized" do
+      let(:site) { make_site("title" => "Site Title", "seo_title_prioritization" => "site") }
+      let(:page_meta) do
+        { "title" => "site title", "pagination" => { "title" => "pagination title" } }
+      end
+      let(:page) { make_page(page_meta) }
 
-    it "should build the title" do
-      expect(output).to match(%r!<title>Site title | pagination title</title>!)
+      it "should build the title" do
+        expect(output).to match(%r!<title>Site Title | pagination title</title>!)
+      end
     end
   end
 
   context "with site.title, page.title, and page.subtitle" do
-    let(:site)      { make_site("title" => "Site title") }
-    let(:title)     { "Test Title" }
-    let(:subtitle)  { "Subtitle" }
-    let(:page_meta) { { "title" => title, "subtitle" => subtitle } }
-    let(:page)      { make_page(page_meta) }
+    context "when site title prioritized" do
+      let(:site)      { make_site("title" => "Site Title", "seo_title_prioritization" => "site") }
+      let(:title)     { "Test Title" }
+      let(:subtitle)  { "Subtitle" }
+      let(:page_meta) { { "title" => title, "subtitle" => subtitle } }
+      let(:page)      { make_page(page_meta) }
 
-    it "should build the title" do
-      expect(output).to match(%r!<title>Site title | title — subtitle</title>!)
+      it "should build the title" do
+        expect(output).to match(%r!<title>Site Title | title — subtitle</title>!)
+      end
+    end
+
+    context "when page title prioritized" do
+      let(:site)      { make_site("title" => "Site Title") }
+      let(:title)     { "Test Title" }
+      let(:subtitle)  { "Subtitle" }
+      let(:page_meta) { { "title" => title, "subtitle" => subtitle } }
+      let(:page)      { make_page(page_meta) }
+
+      it "should build the title" do
+        expect(output).to match(%r!<title>Test Title | Site Title</title>!)
+      end
     end
   end
 
-  context "with site.title and page.title == Home" do
-    let(:site)      { make_site("title" => "Site title") }
+  context "with site.title and page.title == Home and emmasax4 site" do
+    let(:site)      { make_site("title" => "Site Title", "seo_title_prioritization" => "site") }
     let(:title)     { "Home" }
     let(:page_meta) { { "title" => title } }
     let(:page)      { make_page(page_meta) }
 
     it "should build the title" do
-      expect(output).to match(%r!<title>Site title</title>!)
+      expect(output).to match(%r!<title>Site Title</title>!)
     end
   end
 
   context "with site.title and site.description" do
-    let(:site) { make_site("title" => "Site Title", "description" => "Site Description") }
+    context "when site title prioritized" do
+      let(:site) { make_site("title" => "Site Title", "description" => "Site Description", "seo_title_prioritization" => "site") }
 
-    it "builds the title with site title and description" do
-      expect(output).to match(%r!<title>Site Title</title>!)
+      it "builds the title with site title and description" do
+        expect(output).to match(%r!<title>Site Title</title>!)
+      end
+    end
+
+    context "when page title prioritized" do
+      let(:site) { make_site("title" => "Site Title", "description" => "Site Description") }
+
+      it "builds the title with site title and description" do
+        expect(output).to match(%r!<title>Site Title \| Site Description</title>!)
+      end
     end
   end
 
