@@ -33,7 +33,7 @@ module Jekyll
         @display_title = (@text !~ %r!title=false!i)
       end
 
-      def site_title_prioritization?
+      def site_title_prioritized?
         site["seo_title_prioritization"] == "site"
       end
 
@@ -74,14 +74,14 @@ module Jekyll
 
       # Page title with site title or description appended
       def title
-        @title ||= site_title_prioritization? ? determine_site_priority_title : determine_generic_title
+        @title ||= site_title_prioritized? ? site_title_prioritized_title : generic_title
 
         return @title + page_number if page_number
 
         @title
       end
 
-      def determine_generic_title
+      def generic_title
         if site_title && page_title != site_title
           page_title + TITLE_SEPARATOR + site_title
         elsif site_description && site_title
@@ -91,18 +91,18 @@ module Jekyll
         end
       end
 
-      def determine_site_priority_title
+      def site_title_prioritized_title
         if site_title && (page_title == "Home" || page["title"].nil?)
           site_title
         elsif site_title
-          determine_title || site_title
+          determine_detailed_title || site_title
         else
           page_title
         end
       end
 
       # rubocop:disable Metrics/AbcSize
-      def determine_title
+      def determine_detailed_title
         if page_pagination_title
           site_title + TITLE_SEPARATOR + page_pagination_title
         elsif page_subtitle_title

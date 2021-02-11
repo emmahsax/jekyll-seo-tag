@@ -134,7 +134,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
       context "with a page and site title" do
         context "when site title prioritized" do
           it "builds the title" do
-            allow(subject).to receive(:site_title_prioritization?).and_return(true)
+            allow(subject).to receive(:site_title_prioritized?).and_return(true)
             expect(subject.title).to eql("site title | page title")
           end
         end
@@ -277,10 +277,10 @@ RSpec.describe Jekyll::SeoTag::Drop do
       end
     end
 
-    context "determine_title" do
+    context "determine_detailed_title" do
       context "with a page and site title" do
         it "builds the title" do
-          expect(subject.determine_title).to eql("site title | page title")
+          expect(subject.determine_detailed_title).to eql("site title | page title")
         end
       end
 
@@ -291,7 +291,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         end
 
         it "builds the title" do
-          expect(subject.determine_title).to eql("site title | site description")
+          expect(subject.determine_detailed_title).to eql("site title | site description")
         end
       end
 
@@ -302,7 +302,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         end
 
         it "builds the title" do
-          expect(subject.determine_title).to eql("site title | site tagline")
+          expect(subject.determine_detailed_title).to eql("site title | site tagline")
         end
       end
 
@@ -313,7 +313,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         let(:page) { make_page(page_meta) }
 
         it "builds the title" do
-          expect(subject.determine_title).to eql("site title | pagination title")
+          expect(subject.determine_detailed_title).to eql("site title | pagination title")
         end
       end
 
@@ -325,7 +325,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         let(:title_separator) { "—" }
 
         it "builds the title" do
-          expect(subject.determine_title).to eql("site title | site title #{title_separator} subtitle")
+          expect(subject.determine_detailed_title).to eql("site title | site title #{title_separator} subtitle")
         end
       end
     end
