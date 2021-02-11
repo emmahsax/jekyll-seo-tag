@@ -33,6 +33,10 @@ module Jekyll
         @display_title = (@text !~ %r!title=false!i)
       end
 
+      def emmasax4_site?
+        site_title == "Emma Sax"
+      end
+
       def site_title
         @site_title ||= format_string(site["title"] || site["name"])
       end
@@ -68,24 +72,34 @@ module Jekyll
         site_tagline || site_description
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity
       # Page title with site title or description appended
       def title
-        @title ||= begin
-          if site_title && (page_title == "Home" || page["title"].nil?)
-            site_title
-          elsif site_title
-            determine_title || site_title
-          else
-            page_title
-          end
-        end
+        @title ||= emmasax4_site? ? determine_emmasax4_title : determine_generic_title
 
         return @title + page_number if page_number
 
         @title
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
+
+      def determine_generic_title
+        if site_title && page_title != site_title
+          page_title + TITLE_SEPARATOR + site_title
+        elsif site_description && site_title
+          site_title + TITLE_SEPARATOR + site_tagline_or_description
+        else
+          page_title || site_title
+        end
+      end
+
+      def determine_emmasax4_title
+        if site_title && (page_title == "Home" || page["title"].nil?)
+          site_title
+        elsif site_title
+          determine_title || site_title
+        else
+          page_title
+        end
+      end
 
       # rubocop:disable Metrics/AbcSize
       def determine_title
