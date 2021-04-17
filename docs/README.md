@@ -2,7 +2,7 @@
 
 A Jekyll plugin to add metadata tags for search engines and social networks to better index and display your site's content.
 
-[![Build Status](https://travis-ci.com/emmasax4/jekyll-seo-tag.svg?branch=main)](https://travis-ci.com/emmasax4/jekyll-seo-tag)
+[![Build Status](https://travis-ci.com/emmahsax/jekyll-seo-tag.svg?branch=main)](https://travis-ci.com/emmahsax/jekyll-seo-tag)
 
 ## What it does
 
