@@ -167,7 +167,7 @@ RSpec.describe Jekyll::SeoTag do
     end
   end
 
-  context "with site.title and page.title == Home and emmasax4 site" do
+  context "with site.title and page.title == Home and https://emmasax.com" do
     let(:site)      { make_site("title" => "Site Title", "seo_title_prioritization" => "site") }
     let(:title)     { "Home" }
     let(:page_meta) { { "title" => title } }
