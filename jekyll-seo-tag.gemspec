@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "guard-rspec"
-  spec.add_development_dependency "html-proofer", "~> 3.18"
-  spec.add_development_dependency "rspec", "~> 3.5"
-  spec.add_development_dependency "rubocop-jekyll", "~> 0.11"
+  spec.add_development_dependency "html-proofer"
+  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rubocop-jekyll"
 end
