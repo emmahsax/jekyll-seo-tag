@@ -27,9 +27,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "jekyll", ">= 3.8", "< 5.0"
+  spec.add_dependency "commonmarker", "< 0.22"
 
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "guard-rspec"
+  spec.add_development_dependency "bundler", "~> 2.2"
+  spec.add_development_dependency "guard-rspec", "~> 4.7"
   spec.add_development_dependency "html-proofer", "~> 3.18"
   spec.add_development_dependency "rspec", "~> 3.5"
   spec.add_development_dependency "rubocop-jekyll", "~> 0.11"
