@@ -42,30 +42,11 @@ jobs:
         repository: ashmaroli/tomjoht.github.io
         ref: "seo-tag"
         path: sandbox
-<<<<<<< HEAD:.github/workflows/third-party-profiling.yml
-    - name: Set up Ruby
-      uses: actions/setup-ruby@v1
-    - name: Set up Dependencies Cache
-      uses: actions/cache@v1
-      with:
-        path: sandbox/vendor/bundle
-        key: ubuntu-latest-gems-
-        restore-keys: |
-          ubuntu-latest-gems-
-    - name: Set up Dependencies
-      run: |
-        gem update --system --no-document
-        gem update bundler --no-document
-        bundle config gemfile sandbox/Gemfile
-        bundle config path vendor/bundle
-        bundle install --jobs 4 --retry 3
-=======
     - name: "Set up Ruby ${{ matrix.ruby_version }}"
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby_version }}
         bundler-cache: true
->>>>>>> upstream/master:.github/workflows/third-party.yml
     - name: Run Jekyll Build (WITHOUT SEO Tag) 3 times
       run: |
         bundle exec jekyll build -s alpha-sandbox -d alpha-sandbox/_site --trace
@@ -77,8 +58,4 @@ jobs:
         bundle exec jekyll build -s sandbox -d sandbox/_site --trace
         bundle exec jekyll build -s sandbox -d sandbox/_site --trace
     - name: Memory Analysis of Jekyll Build (WITH SEO Tag)
-<<<<<<< HEAD:.github/workflows/third-party-profiling.yml
-      run: bundle exec ruby jekyll-seo-tag/.github/actions/memprof.rb sandbox
-=======
       run: bash jekyll-seo-tag/.github/actions/memprof
->>>>>>> upstream/master:.github/workflows/third-party.yml
