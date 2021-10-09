@@ -16,9 +16,8 @@ module Jekyll
       def_delegator :page_drop, :type,           :type
 
       # Expose #type and #logo as private methods and #@type as a public method
-      alias_method :"@type", :type
-      private :type
-      private :logo
+      alias_method :@type, :type
+      private :type, :logo
 
       VALID_ENTITY_TYPES = %w(BlogPosting CreativeWork).freeze
       VALID_AUTHOR_TYPES = %w(Organization Person).freeze
@@ -42,10 +41,15 @@ module Jekyll
         author_type = page_drop.author["type"]
         return if author_type && !VALID_AUTHOR_TYPES.include?(author_type)
 
-        {
+        hash = {
           "@type" => author_type || "Person",
           "name"  => page_drop.author["name"],
         }
+
+        author_url = page_drop.author["url"]
+        hash["url"] = author_url if author_url
+
+        hash
       end
 
       def image
@@ -89,7 +93,7 @@ module Jekyll
           'author', 'publisher', 'description', 'sameAs', 'image', '@type', '@context'
         ]
         hash = (sort_order & to_h.keys).map { |k| [k, to_h[k]] }.to_h
-        hash.reject { |_k, v| v.nil? }.to_json
+        hash.compact.to_json
       end
 
       private
