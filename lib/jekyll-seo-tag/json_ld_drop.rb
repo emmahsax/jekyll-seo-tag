@@ -89,8 +89,8 @@ module Jekyll
 
       def to_json
         sort_order = [
-          'headline', 'name', 'url', 'mainEntityOfPage', 'dateModified', 'datePublished',
-          'author', 'publisher', 'description', 'sameAs', 'image', '@type', '@context'
+          "headline", "name", "url", "mainEntityOfPage", "dateModified", "datePublished",
+          "author", "publisher", "description", "sameAs", "image", "@type", "@context",
         ]
         hash = (sort_order & to_h.keys).map { |k| [k, to_h[k]] }.to_h
         hash.compact.to_json

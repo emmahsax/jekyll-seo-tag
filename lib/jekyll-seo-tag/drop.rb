@@ -59,13 +59,10 @@ module Jekyll
           if page["pagination"]
             title = format_string(page["pagination"]["title"])
             if title == "Blog" || format_string(page["pagination"]["collection"]).nil?
-              return title
+              title
             else
-              return "Blog – #{title}"
+              "Blog – #{title}"
             end
-            title
-          else
-            nil
           end
         end
       end
@@ -73,7 +70,7 @@ module Jekyll
       def page_subtitle_title
         @page_subtitle_title ||= begin
           if page["title"] && page["subtitle"]
-            format_string(page["title"] + " – " + page["subtitle"])
+            format_string("#{page["title"]} – #{page["subtitle"]}")
           end
         end
       end
@@ -89,9 +86,9 @@ module Jekyll
 
       def generic_title
         if site_title && page_title != site_title
-          page_title + TITLE_SEPARATOR + site_title
+          "#{page_title}#{TITLE_SEPARATOR}#{site_title}"
         elsif site_description && site_title
-          site_title + TITLE_SEPARATOR + site_tagline_or_description
+          "#{site_title}#{TITLE_SEPARATOR}#{site_tagline_or_description}"
         else
           page_title || site_title
         end
@@ -116,7 +113,7 @@ module Jekyll
                         add_page_number(:after, site_tagline_or_description)
                       end
 
-        small_title + TITLE_SEPARATOR + site_title
+        "#{small_title}#{TITLE_SEPARATOR}#{site_title}"
       end
 
       def name
@@ -241,8 +238,8 @@ module Jekyll
 
       def add_page_number(placement, title)
         if page_number
-          return page_number + " " + title if placement == :before
-          return title + " " + page_number if placement == :after
+          return "#{page_number} #{title}" if placement == :before
+          return "#{title} #{page_number}" if placement == :after
         end
 
         title
