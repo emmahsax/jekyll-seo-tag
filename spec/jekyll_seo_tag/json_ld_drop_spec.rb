@@ -201,15 +201,16 @@ RSpec.describe Jekyll::SeoTag::JSONLDDrop do
 
   context "sorting the final json value" do
     it "accurately sorts the final json value based on the sort precedence set" do
-      any_char = %r{[\/a-zA-Z\d\s:-]+}
-      match_one = %r{"headline":"#{any_char}","name":"#{any_char}","url":"}
-      match_two = %r{"dateModified":"#{any_char}","datePublished":"#{any_char}","author":}
-      match_three = %r{"description":"#{any_char}","sameAs":}
-      match_four = %r{"image":"#{any_char}","@type":"#{any_char}","@context":"#{any_char}"}
+      any_char = %r![/a-zA-Z\d\s:-]+!
+      match_one = %r!"headline":"#{any_char}","name":"#{any_char}","url":"!
+      match_two = %r!"dateModified":"#{any_char}","datePublished":"#{any_char}","author":!
+      match_three = %r!"description":"#{any_char}","sameAs":!
+      match_four = %r!"image":"#{any_char}","@type":"#{any_char}","@context":"#{any_char}"!
       expect(subject.to_json).to start_with('{"headline')
       expect(subject.to_json).to match(match_one)
       expect(subject.to_json).to match(match_two)
       expect(subject.to_json).to match(match_three)
+      expect(subject.to_json).not_to match(match_four)
       expect(subject.to_json).to end_with('"@type":"BlogPosting","@context":"https://schema.org"}')
     end
   end

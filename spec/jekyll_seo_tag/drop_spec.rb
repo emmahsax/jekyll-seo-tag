@@ -85,13 +85,41 @@ RSpec.describe Jekyll::SeoTag::Drop do
         end
       end
 
-      context "with pagination title" do
+      context "with pagination title and the title is not 'Blog', but collection does not exist" do
         let(:title)     { "Test Title" }
         let(:page_meta) { { "pagination" => { "title" => title } } }
         let(:page)      { make_page(page_meta) }
 
         it "will return the paginated title" do
           expect(subject.page_pagination_title).to eql(title)
+        end
+      end
+
+      context "with the pagination title and the title is not 'Blog', but collection exists" do
+        let(:title)     { "Test Title" }
+        let(:page_meta) { { "pagination" => { "title" => title, "collection" => :collection_name } } }
+        let(:page)      { make_page(page_meta) }
+
+        it "will return the title with the word 'Blog'" do
+          expect(subject.page_pagination_title).to eq("Blog – #{title}")
+        end
+      end
+
+      context "with the pagination title and the title is 'Blog', but collection exists" do
+        let(:page_meta) { { "pagination" => { "title" => "Blog", "collection" => :collection_name } } }
+        let(:page)      { make_page(page_meta) }
+
+        it "will return the title with the word 'Blog'" do
+          expect(subject.page_pagination_title).to eq("Blog")
+        end
+      end
+
+      context "with the pagination title and the title is 'Blog', and collection does not exists" do
+        let(:page_meta) { { "pagination" => { "title" => "Blog" } } }
+        let(:page)      { make_page(page_meta) }
+
+        it "will return the title with the word 'Blog'" do
+          expect(subject.page_pagination_title).to eq("Blog")
         end
       end
     end
@@ -102,7 +130,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         let(:subtitle)        { "Subtitle" }
         let(:page_meta)       { { "title" => title, "subtitle" => subtitle } }
         let(:page)            { make_page(page_meta) }
-        let(:title_separator) { " — " }
+        let(:title_separator) { " – " }
 
         it "will return the two connected by an title_separator" do
           expect(subject.page_subtitle_title).to eql(title + title_separator + subtitle)
@@ -132,14 +160,14 @@ RSpec.describe Jekyll::SeoTag::Drop do
 
     context "title" do
       context "with a page and site title" do
-        context "when site title prioritized" do
+        context "when using a custom site title" do
           it "builds the title" do
-            allow(subject).to receive(:site_title_prioritized?).and_return(true)
-            expect(subject.title).to eql("site title | page title")
+            allow(subject).to receive(:seo_custom_title?).and_return(true)
+            expect(subject.title).to eql("page title | site title")
           end
         end
 
-        context "when page title prioritized" do
+        context "when not using a custom site title" do
           it "builds the title" do
             expect(subject.title).to eql("page title | site title")
           end
@@ -147,18 +175,18 @@ RSpec.describe Jekyll::SeoTag::Drop do
       end
 
       context "with a site description but no page title" do
-        context "when site title prioritized" do
+        context "when using a custom site title" do
           let(:page)  { make_page }
           let(:config) do
-            { "title" => "Site Title", "description" => "site description", "seo_title_prioritization" => "site" }
+            { "title" => "Site Title", "description" => "site description", "seo_custom_title" => true }
           end
 
           it "builds the title" do
-            expect(subject.title).to eql("Site Title")
+            expect(subject.title).to eql("site description | Site Title")
           end
         end
 
-        context "when page title prioritized" do
+        context "when not using a custom site title" do
           let(:page)  { make_page }
           let(:config) do
             { "title" => "site title", "description" => "site description" }
@@ -171,18 +199,18 @@ RSpec.describe Jekyll::SeoTag::Drop do
       end
 
       context "with a site tagline but no page title" do
-        context "when site title prioritized" do
+        context "when using a custom site title" do
           let(:page)  { make_page }
           let(:config) do
-            { "title" => "Site Title", "description" => "site description", "tagline" => "site tagline", "seo_title_prioritization" => "site" }
+            { "title" => "Site Title", "description" => "site description", "tagline" => "site tagline", "seo_custom_title" => true }
           end
 
           it "builds the title" do
-            expect(subject.title).to eql("Site Title")
+            expect(subject.title).to eql("site tagline | Site Title")
           end
         end
 
-        context "when page title prioritized" do
+        context "when not using a custom site title" do
           let(:page)  { make_page }
           let(:config) do
             { "title" => "site title", "description" => "site description", "tagline" => "site tagline" }
@@ -244,29 +272,6 @@ RSpec.describe Jekyll::SeoTag::Drop do
         end
       end
 
-      context "when the page title is Home" do
-        context "when site title prioritized" do
-          let(:page_meta) { { "title" => "Home" } }
-          let(:page)      { make_page(page_meta) }
-          let(:config) do
-            { "title" => "Site Title", "description" => "site description", "tagline" => "site tagline", "seo_title_prioritization" => "site" }
-          end
-
-          it "should return only the site title" do
-            expect(subject.title).to eql("Site Title")
-          end
-        end
-
-        context "when page title prioritized" do
-          let(:page_meta) { { "title" => "Home" } }
-          let(:page)      { make_page(page_meta) }
-
-          it "should return only the site title" do
-            expect(subject.title).to eql("Home | site title")
-          end
-        end
-      end
-
       context "when the page title is nil" do
         let(:page_meta) { { "title" => nil } }
         let(:page)      { make_page(page_meta) }
@@ -278,9 +283,18 @@ RSpec.describe Jekyll::SeoTag::Drop do
     end
 
     context "determine_detailed_title" do
+      context "with an overriding page title" do
+        let(:page_meta) do
+          { "title_meta" => "override", "pagination" => { "title" => "pagination title" } }
+        end
+
+        it "shows the override no matter what" do
+          expect(subject.determine_detailed_title).to eq("override | site title")
+        end
+      end
       context "with a page and site title" do
         it "builds the title" do
-          expect(subject.determine_detailed_title).to eql("site title | page title")
+          expect(subject.determine_detailed_title).to eql("page title | site title")
         end
       end
 
@@ -291,7 +305,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         end
 
         it "builds the title" do
-          expect(subject.determine_detailed_title).to eql("site title | site description")
+          expect(subject.determine_detailed_title).to eql("site description | site title")
         end
       end
 
@@ -302,7 +316,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         end
 
         it "builds the title" do
-          expect(subject.determine_detailed_title).to eql("site title | site tagline")
+          expect(subject.determine_detailed_title).to eql("site tagline | site title")
         end
       end
 
@@ -313,7 +327,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
         let(:page) { make_page(page_meta) }
 
         it "builds the title" do
-          expect(subject.determine_detailed_title).to eql("site title | pagination title")
+          expect(subject.determine_detailed_title).to eql("pagination title | site title")
         end
       end
 
@@ -322,10 +336,10 @@ RSpec.describe Jekyll::SeoTag::Drop do
           { "title" => "site title", "subtitle" => "subtitle" }
         end
         let(:page)            { make_page(page_meta) }
-        let(:title_separator) { "—" }
+        let(:title_separator) { "–" }
 
         it "builds the title" do
-          expect(subject.determine_detailed_title).to eql("site title | site title #{title_separator} subtitle")
+          expect(subject.determine_detailed_title).to eql("site title #{title_separator} subtitle | site title")
         end
       end
     end
@@ -686,10 +700,10 @@ RSpec.describe Jekyll::SeoTag::Drop do
     end
 
     it "render default pagination title" do
-      expect(subject.send(:page_number)).to eq(" (page 2 of 10)")
+      expect(subject.send(:page_number)).to eq("Page 2 of 10 for ")
     end
 
-    context "render custom pagination title" do
+    context "render pagination title when passed in" do
       let(:config) { { "seo_paginator_message" => "%<current>s of %<total>s" } }
 
       it "renders the correct page number" do
@@ -697,9 +711,17 @@ RSpec.describe Jekyll::SeoTag::Drop do
       end
     end
 
+    context "render the custom default pagination title" do
+      let(:config) { { "seo_custom_title" => true } }
+
+      it "renders the correct page number" do
+        expect(subject.send(:page_number)).to eq("(page 2 of 10)")
+      end
+    end
+
     context "render built-in pagination title" do
       it "renders the correct page number" do
-        expect(subject.send(:page_number)).to eq(" (page 2 of 10)")
+        expect(subject.send(:page_number)).to eq("Page 2 of 10 for ")
       end
     end
   end
