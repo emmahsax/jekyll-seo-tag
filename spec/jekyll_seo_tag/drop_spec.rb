@@ -283,6 +283,15 @@ RSpec.describe Jekyll::SeoTag::Drop do
     end
 
     context "determine_detailed_title" do
+      context "with an overriding page title" do
+        let(:page_meta) do
+          { "title_meta" => "override", "pagination" => { "title" => "pagination title" } }
+        end
+
+        it "shows the override no matter what" do
+          expect(subject.determine_detailed_title).to eq("override | site title")
+        end
+      end
       context "with a page and site title" do
         it "builds the title" do
           expect(subject.determine_detailed_title).to eql("page title | site title")

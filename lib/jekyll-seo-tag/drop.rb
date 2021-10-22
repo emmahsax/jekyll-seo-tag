@@ -103,7 +103,9 @@ module Jekyll
       end
 
       def determine_detailed_title
-        small_title = if page_pagination_title
+        small_title = if format_string(page["title_meta"])
+                        format_string(page["title_meta"])
+                      elsif page_pagination_title
                         add_page_number(:after, page_pagination_title)
                       elsif page_subtitle_title
                         add_page_number(:after, page_subtitle_title)
