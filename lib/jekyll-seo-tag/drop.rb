@@ -81,13 +81,7 @@ module Jekyll
 
       # Page title with site title or description appended
       def title
-        @title ||= if seo_custom_title?
-                     seo_custom_title
-                   else
-                     add_page_number(:before, generic_title)
-                   end
-
-        @title
+        @title ||= seo_custom_title? ? seo_custom_title : add_page_number(:before, generic_title)
       end
 
       def generic_title
