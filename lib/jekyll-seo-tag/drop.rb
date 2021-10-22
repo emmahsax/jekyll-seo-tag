@@ -33,8 +33,8 @@ module Jekyll
         @display_title = (@text !~ %r!title=false!i)
       end
 
-      def site_title_prioritized?
-        site["seo_title_prioritization"] == "site"
+      def seo_custom_title?
+        site["seo_custom_title"] == true
       end
 
       def site_title
@@ -56,14 +56,21 @@ module Jekyll
 
       def page_pagination_title
         @page_pagination_title ||= begin
-          format_string(page["pagination"]["title"]) if page["pagination"]
+          if page["pagination"]
+            title = format_string(page["pagination"]["title"])
+            if title == "Blog" || format_string(page["pagination"]["collection"]).nil?
+              return title
+            else
+              return "Blog – #{title}"
+            end
+          end
         end
       end
 
       def page_subtitle_title
         @page_subtitle_title ||= begin
           if page["title"] && page["subtitle"]
-            format_string(page["title"] + " — " + page["subtitle"])
+            format_string(page["title"] + " – " + page["subtitle"])
           end
         end
       end
@@ -74,9 +81,11 @@ module Jekyll
 
       # Page title with site title or description appended
       def title
-        @title ||= site_title_prioritized? ? site_title_prioritized_title : generic_title
-
-        return @title + page_number if page_number
+        @title ||= if seo_custom_title?
+                     seo_custom_title
+                   else
+                     add_page_number(:before, generic_title)
+                   end
 
         @title
       end
@@ -91,29 +100,27 @@ module Jekyll
         end
       end
 
-      def site_title_prioritized_title
-        if site_title && (page_title == "Home" || page["title"].nil?)
-          site_title
-        elsif site_title
-          determine_detailed_title || site_title
+      def seo_custom_title
+        if site_title
+          determine_detailed_title || add_page_number(:after, site_title)
         else
-          page_title
+          add_page_number(:after, page_title)
         end
       end
 
-      # rubocop:disable Metrics/AbcSize
       def determine_detailed_title
-        if page_pagination_title
-          site_title + TITLE_SEPARATOR + page_pagination_title
-        elsif page_subtitle_title
-          site_title + TITLE_SEPARATOR + page_subtitle_title
-        elsif page_title != site_title
-          site_title + TITLE_SEPARATOR + page_title
-        elsif site_description
-          site_title + TITLE_SEPARATOR + site_tagline_or_description
-        end
+        small_title = if page_pagination_title
+                        add_page_number(:after, page_pagination_title)
+                      elsif page_subtitle_title
+                        add_page_number(:after, page_subtitle_title)
+                      elsif page_title != site_title
+                        add_page_number(:after, page_title)
+                      elsif site_description
+                        add_page_number(:after, site_tagline_or_description)
+                      end
+
+        small_title + TITLE_SEPARATOR + site_title
       end
-      # rubocop:enable Metrics/AbcSize
 
       def name
         return @name if defined?(@name)
@@ -235,12 +242,27 @@ module Jekyll
         page["url"] =~ HOMEPAGE_OR_ABOUT_REGEX
       end
 
+      def add_page_number(placement, title)
+        if page_number
+          return page_number + " " + title if placement == :before
+          return title + " " + page_number if placement == :after
+        end
+
+        title
+      end
+
       def page_number
         return unless @context["paginator"] && @context["paginator"]["page"]
 
         current = @context["paginator"]["page"]
         total = @context["paginator"]["total_pages"]
-        paginator_message = site["seo_paginator_message"] || " (page %<current>s of %<total>s)"
+        paginator_message = site["seo_paginator_message"] || (
+          if seo_custom_title?
+            "(page %<current>s of %<total>s)"
+          else
+            "Page %<current>s of %<total>s for "
+          end
+        )
 
         format(paginator_message, :current => current, :total => total) if current > 1
       end
