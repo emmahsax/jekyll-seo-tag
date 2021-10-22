@@ -63,6 +63,9 @@ module Jekyll
             else
               return "Blog – #{title}"
             end
+            title
+          else
+            nil
           end
         end
       end
