@@ -4,6 +4,8 @@
 
   * Allow to set type for author (#427)
   * Allow setting `author.url` (#453)
+  * Implement Facebook domain verification (#455)
+  * Add `og:image:alt` and `twitter:image:alt` (#438)
 
 ### Development Fixes
 
@@ -14,6 +16,7 @@
 ### Bug Fixes
 
   * Set the default og:type to &#39;website&#39; (#391)
+  * Template: Remove double new line (#454)
 
 ## 2.7.1 / 2020-10-18
 
