@@ -196,6 +196,7 @@ RSpec.describe Jekyll::SeoTag do
     it "uses the page description" do
       expect(output).to match(%r!<meta name="description" content="foo" />!)
       expect(output).to match(%r!<meta property="og:description" content="foo" />!)
+      expect(output).to match(%r!<meta property="twitter:description" content="foo" />!)
     end
   end
 
@@ -205,6 +206,7 @@ RSpec.describe Jekyll::SeoTag do
     it "uses the page excerpt when no page description exists" do
       expect(output).to match(%r!<meta name="description" content="foo" />!)
       expect(output).to match(%r!<meta property="og:description" content="foo" />!)
+      expect(output).to match(%r!<meta property="twitter:description" content="foo" />!)
     end
   end
 
@@ -214,6 +216,7 @@ RSpec.describe Jekyll::SeoTag do
     it "uses the site description when no page description nor excerpt exist" do
       expect(output).to match(%r!<meta name="description" content="foo" />!)
       expect(output).to match(%r!<meta property="og:description" content="foo" />!)
+      expect(output).to match(%r!<meta property="twitter:description" content="foo" />!)
     end
   end
 

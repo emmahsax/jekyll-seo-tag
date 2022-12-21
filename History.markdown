@@ -3,6 +3,12 @@
 ### Development Fixes
 
   * Add Ruby 3.1 to CI matrix (#459)
+  * chore: remove git.io (#462)
+
+### Minor Enhancements
+
+  * Added the `twitter:description` tag (#464)
+  * Support for image paths relative to the page&#39;s directory (#466)
 
 ## 2.8.0 / 2022-02-04
 
