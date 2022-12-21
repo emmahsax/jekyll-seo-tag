@@ -613,7 +613,7 @@ RSpec.describe Jekyll::SeoTag::Drop do
   end
 
   context "image" do
-    let(:image) { "foo.png" }
+    let(:image) { "/foo.png" }
     let(:page_meta) { { "image" => image } }
 
     it "returns a Drop" do
