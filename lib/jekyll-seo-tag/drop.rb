@@ -9,7 +9,7 @@ module Jekyll
       FORMAT_STRING_METHODS = [
         :markdownify, :strip_html, :normalize_whitespace, :escape_once,
       ].freeze
-      HOMEPAGE_OR_ABOUT_REGEX = %r!^/(about/)?(index.html?)?$!.freeze
+      HOMEPAGE_OR_ABOUT_REGEX = %r!^/(about/)?(index.html?)?$!
 
       EMPTY_READ_ONLY_HASH = {}.freeze
       private_constant :EMPTY_READ_ONLY_HASH
