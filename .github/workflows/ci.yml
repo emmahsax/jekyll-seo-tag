@@ -24,7 +24,7 @@ jobs:
         jekyll_version:
         - "~> 4.0"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 5
       - name: "Set up Ruby ${{ matrix.ruby_version }}"
@@ -48,7 +48,7 @@ jobs:
         jekyll_version:
         - "~> 3.9"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 5
       - name: "Set up Ruby ${{ matrix.ruby_version }}"
@@ -69,7 +69,7 @@ jobs:
         ruby_version:
         - 3.2
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 5
       - name: "Set up Ruby ${{ matrix.ruby_version }}"
@@ -90,7 +90,7 @@ jobs:
         ruby_version:
         - 3.2
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 5
       - name: "Set up Ruby ${{ matrix.ruby_version }}"
