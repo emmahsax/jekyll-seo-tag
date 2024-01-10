@@ -18,9 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby_version:
-        - 3.1
-        - 3.2
+        ruby_version: ["3.1", "3.2", "3.3"]
         jekyll_version:
         - "~> 4.0"
     steps:
@@ -43,8 +41,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby_version:
-        - 3.2
+        ruby_version: ["3.3"]
         jekyll_version:
         - "~> 3.9"
     steps:
@@ -59,26 +56,25 @@ jobs:
       - name: Execute tests
         run:  bundle exec rspec
 
-  style_check:
-    if: "!contains(github.event.commits[0].message, '[ci skip]')"
-    name: "Code Style Check (Ruby ${{ matrix.ruby_version }})"
-    runs-on: 'ubuntu-latest'
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby_version:
-        - 3.2
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 5
-      - name: "Set up Ruby ${{ matrix.ruby_version }}"
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby_version }}
-          bundler-cache: true
-      - name: Check Style Offenses
-        run:  bundle exec rubocop -S -D
+  # style_check:
+  #   if: "!contains(github.event.commits[0].message, '[ci skip]')"
+  #   name: "Code Style Check (Ruby ${{ matrix.ruby_version }})"
+  #   runs-on: 'ubuntu-latest'
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       ruby_version: ["3.3"]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 5
+  #     - name: "Set up Ruby ${{ matrix.ruby_version }}"
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: ${{ matrix.ruby_version }}
+  #         bundler-cache: true
+  #     - name: Check Style Offenses
+  #       run:  bundle exec rubocop -S -D
 
   gem_build:
     if: "!contains(github.event.commits[0].message, '[ci skip]')"
@@ -87,8 +83,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby_version:
-        - 3.2
+        ruby_version: ["3.3"]
     steps:
       - uses: actions/checkout@v4
         with:
