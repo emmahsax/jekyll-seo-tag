@@ -4,6 +4,16 @@ A Jekyll plugin to add metadata tags for search engines and social networks to b
 
 [![Build Status](https://travis-ci.com/emmahsax/jekyll-seo-tag.svg?branch=main)](https://travis-ci.com/emmahsax/jekyll-seo-tag)
 
+## Archival Notice
+
+This repository has been archived and designated as read-only. From GitHub's documentation:
+
+> This will make the emmahsax/jekyll-seo-tag repository, issues, pull requests, labels, milestones, projects, wiki, releases, commits, tags, branches, reactions and comments read-only and disable any future comments. The repository can still be forked.
+
+For a similar GitHub Action that is _not_ archived, please visit the source of this project: https://github.com/jekyll/jekyll-seo-tag.
+
+To unarchive this repository at any time, please reach out to me at https://emmasax.com/contact-me/.
+
 ## What it does
 
 Jekyll SEO Tag adds the following meta tags to your site:
